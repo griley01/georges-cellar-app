@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>George's Cellar</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1a3a1a">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>
+  :root {
+    --wine-green: #1a3a1a; --wine-green-dark: #0f2410; --wine-gold: #c9a84c;
+    --parchment: #f7f4ee; --ink: #2a241c; --ink-soft: #6b6152;
+    --card: #ffffff; --border: #e4ddd0; --red: #8a2020;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Helvetica Neue', Arial, sans-serif; background: var(--parchment); color: var(--ink); min-height: 100vh; padding-bottom: 90px; }
+  .header { background: linear-gradient(160deg, var(--wine-green) 0%, var(--wine-green-dark) 100%); padding: calc(1.5rem + env(safe-area-inset-top)) 1.25rem 1.5rem; color: #fff; }
+  .eyebrow { font-size: 11px; letter-spacing: 0.14em; color: var(--wine-gold); text-transform: uppercase; margin-bottom: 0.4rem; }
+  h1 { font-family: Georgia, serif; font-size: 26px; font-weight: 400; }
+  .kpi-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 1rem; }
+  .kpi { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 0.75rem 0.6rem; text-align: center; }
+  .kpi-label { font-size: 10px; color: var(--ink-soft); text-transform: uppercase; }
+  .kpi-value { font-family: Georgia, serif; font-size: 20px; margin-top: 2px; }
+  .filter-bar { padding: 0 1rem; display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 0.75rem; }
+  .filter-bar input, .filter-bar select { font-size: 13px; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border); background: #fff; flex: 1; min-width: 120px; }
+  .grid { padding: 0 1rem; display: grid; gap: 10px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 0.9rem 1rem; }
+  .card-top { display: flex; justify-content: space-between; gap: 8px; }
+  .card-name { font-family: Georgia, serif; font-size: 15px; }
+  .card-sub { font-size: 12px; color: var(--ink-soft); margin-top: 2px; }
+  .pill { font-size: 11px; padding: 2px 8px; border-radius: 20px; background: #f1ede3; color: var(--ink-soft); margin-right: 4px; }
+  .stars { font-size: 15px; letter-spacing: 2px; color: var(--wine-gold); cursor: pointer; margin-top: 6px; }
+  .stars span.filled { color: var(--wine-gold); } .stars span { color: #ddd; }
+  .drunk-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: 12px; color: var(--ink-soft); }
+  .switch { position: relative; width: 34px; height: 19px; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider { position: absolute; inset: 0; background: #ddc; border-radius: 20px; cursor: pointer; }
+  .slider:before { content: ""; position: absolute; height: 14px; width: 14px; left: 2.5px; bottom: 2.5px; background: #fff; border-radius: 50%; transition: 0.15s; }
+  .switch input:checked + .slider { background: var(--wine-green); }
+  .switch input:checked + .slider:before { transform: translateX(15px); }
+  .notes-input { width: 100%; font-size: 12.5px; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--border); margin-top: 6px; font-family: inherit; }
+
+  #addBtn { position: fixed; bottom: calc(22px + env(safe-area-inset-bottom)); right: 22px; width: 56px; height: 56px; border-radius: 50%; background: var(--wine-green); color: var(--wine-gold); font-size: 1.7em; border: none; box-shadow: 0 4px 14px rgba(15,36,16,0.4); z-index: 5; }
+  #cameraBtn { position: fixed; bottom: calc(90px + env(safe-area-inset-bottom)); right: 22px; width: 48px; height: 48px; border-radius: 50%; background: #fff; color: var(--wine-green); font-size: 1.3em; border: 1px solid var(--border); box-shadow: 0 4px 14px rgba(0,0,0,0.15); z-index: 5; }
+
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(20,20,15,0.5); z-index: 50; align-items: flex-start; justify-content: center; padding: 2rem 1rem; overflow-y: auto; }
+  .overlay.open { display: flex; }
+  .modal { background: var(--card); border-radius: 12px; max-width: 480px; width: 100%; padding: 1.5rem; }
+  .modal input, .modal select, .modal textarea { width: 100%; font-size: 14px; padding: 9px 10px; border-radius: 6px; border: 1px solid var(--border); margin-bottom: 10px; font-family: inherit; }
+  .modal label { font-size: 11px; color: var(--ink-soft); text-transform: uppercase; }
+  .modal-actions { display: flex; gap: 8px; margin-top: 8px; }
+  .btn { flex: 1; padding: 10px; border-radius: 6px; border: none; font-size: 14px; cursor: pointer; }
+  .btn-primary { background: var(--wine-green); color: var(--wine-gold); }
+  .btn-secondary { background: #f1ede3; color: var(--ink-soft); }
+  .loading-note { text-align: center; font-size: 12px; color: var(--ink-soft); padding: 0.5rem; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="eyebrow">Live cellar · installed app</div>
+  <h1>George's cellar</h1>
+</div>
+
+<div class="kpi-row">
+  <div class="kpi"><div class="kpi-label">Bottles</div><div class="kpi-value" id="kpiBottles">–</div></div>
+  <div class="kpi"><div class="kpi-label">In cellar</div><div class="kpi-value" id="kpiRemaining">–</div></div>
+  <div class="kpi"><div class="kpi-label">Value</div><div class="kpi-value" id="kpiValue">–</div></div>
+</div>
+
+<div class="filter-bar">
+  <input type="text" id="search" placeholder="Search producer, region, grape…">
+  <select id="filterType"><option value="">All types</option></select>
+</div>
+
+<div class="loading-note" id="loadingNote">Loading your cellar…</div>
+<div class="grid" id="grid"></div>
+
+<input type="file" accept="image/*" capture="environment" id="cameraInput" style="display:none">
+<button id="cameraBtn" onclick="document.getElementById('cameraInput').click()">📷</button>
+<button id="addBtn" onclick="openAddModal()">+</button>
+
+<div class="overlay" id="overlay"><div class="modal" id="modal"></div></div>
+
+<script src="app.js"></script>
+</body>
+</html>
