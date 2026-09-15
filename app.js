@@ -243,11 +243,15 @@ function showScanningModal(message) {
   document.getElementById('modal').innerHTML = `
     <div style="text-align:center; padding: 1.5rem 0.5rem;">
       <div class="spinner" style="margin: 0 auto 1rem;"></div>
-      <div style="font-size:14px; color:var(--ink-soft)">${message}</div>
+      <div style="font-size:14px; color:var(--ink-soft); margin-bottom:1rem">${message}</div>
+      <button class="btn btn-secondary" style="max-width:140px; margin:0 auto" onclick="cancelScan()">Cancel</button>
     </div>
   `;
   document.getElementById('overlay').classList.add('open');
 }
+
+let scanCancelled = false;
+function cancelScan() { scanCancelled = true; closeModal(); }
 
 function showScanFailedModal() {
   document.getElementById('modal').innerHTML = `
@@ -265,8 +269,22 @@ function showScanFailedModal() {
   document.getElementById('overlay').classList.add('open');
 }
 
+function withTimeout(promise, ms) {
+  return Promise.race([
+    promise,
+    new Promise((resolve) => setTimeout(() => resolve({ found: false, error: 'Timed out — the request took too long.' }), ms))
+  ]);
+}
+
 async function runPhotoIdentify(base64) {
-  return apiPost({ action: 'identifyPhoto', imageData: base64, mimeType: 'image/jpeg' });
+  try {
+    return await withTimeout(
+      apiPost({ action: 'identifyPhoto', imageData: base64, mimeType: 'image/jpeg' }),
+      25000
+    );
+  } catch (e) {
+    return { found: false, error: 'Network error — check your connection.' };
+  }
 }
 
 document.getElementById('cameraInput').addEventListener('change', async (event) => {
@@ -274,15 +292,19 @@ document.getElementById('cameraInput').addEventListener('change', async (event) 
   event.target.value = '';
   if (!file) return;
 
+  scanCancelled = false;
   showScanningModal('Reading the label…');
   const base64 = await resizeImage(file, 1024);
+  if (scanCancelled) return;
 
   let result = await runPhotoIdentify(base64);
+  if (scanCancelled) return;
   if (!result.found) {
     // Automatic single retry — Gemini occasionally misses on the first pass with an
     // angled or partially obscured label, and a second attempt often succeeds.
     showScanningModal('First read was unclear — trying again…');
     result = await runPhotoIdentify(base64);
+    if (scanCancelled) return;
   }
 
   if (!result.found) {
