@@ -1,4 +1,4 @@
-const CACHE_NAME = 'georges-cellar-v2';
+const CACHE_NAME = 'georges-cellar-v3';
 const APP_SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', function (event) {
