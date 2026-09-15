@@ -239,17 +239,54 @@ function resizeImage(file, maxDim) {
   });
 }
 
+function showScanningModal(message) {
+  document.getElementById('modal').innerHTML = `
+    <div style="text-align:center; padding: 1.5rem 0.5rem;">
+      <div class="spinner" style="margin: 0 auto 1rem;"></div>
+      <div style="font-size:14px; color:var(--ink-soft)">${message}</div>
+    </div>
+  `;
+  document.getElementById('overlay').classList.add('open');
+}
+
+function showScanFailedModal() {
+  document.getElementById('modal').innerHTML = `
+    <div style="text-align:center; padding: 1rem 0.5rem;">
+      <div style="font-size:14px; color:var(--ink-soft); margin-bottom:1rem">
+        Couldn't read a wine label in that photo, even after a second try.
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-secondary" onclick="closeModal(); document.getElementById('cameraInput').click();">Try another photo</button>
+        <button class="btn btn-primary" onclick="openAddModal()">Enter manually</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('overlay').classList.add('open');
+}
+
+async function runPhotoIdentify(base64) {
+  return apiPost({ action: 'identifyPhoto', imageData: base64, mimeType: 'image/jpeg' });
+}
+
 document.getElementById('cameraInput').addEventListener('change', async (event) => {
   const file = event.target.files[0];
-  if (!file) return;
-  document.getElementById('loadingNote').style.display = 'block';
-  document.getElementById('loadingNote').textContent = 'Reading the label…';
-  const base64 = await resizeImage(file, 1024);
-  const result = await apiPost({ action: 'identifyPhoto', imageData: base64, mimeType: 'image/jpeg' });
-  document.getElementById('loadingNote').style.display = 'none';
   event.target.value = '';
+  if (!file) return;
+
+  showScanningModal('Reading the label…');
+  const base64 = await resizeImage(file, 1024);
+
+  let result = await runPhotoIdentify(base64);
   if (!result.found) {
-    alert(result.error || "Couldn't identify a wine label in that photo — try again or add it manually.");
+    // Automatic single retry — Gemini occasionally misses on the first pass with an
+    // angled or partially obscured label, and a second attempt often succeeds.
+    showScanningModal('First read was unclear — trying again…');
+    result = await runPhotoIdentify(base64);
+  }
+
+  if (!result.found) {
+    showScanFailedModal();
     return;
   }
   openAddModal(result);
