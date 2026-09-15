@@ -95,6 +95,7 @@ function render() {
       <div style="margin-top:6px;cursor:pointer" onclick="openDetailModal(${w._row})">
         <span class="pill">${w.Type || ''}</span>
         ${w.Region ? `<span class="pill">${w.Region.split(',')[0]}</span>` : ''}
+        ${w.Grapes ? `<span class="pill">${grapeShort_(w.Grapes)}</span>` : ''}
         ${w.Magnum === 'Yes' ? '<span class="pill">Magnum</span>' : ''}
       </div>
       <div class="stars">${starsHtml}</div>
