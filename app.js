@@ -67,14 +67,14 @@ function render() {
     const starsHtml = [1,2,3,4,5].map(n => `<span class="${n <= myRating ? 'filled' : ''}" data-row="${w._row}" data-n="${n}" onclick="setRating(this)">★</span>`).join('');
     return `
     <div class="card">
-      <div class="card-top">
+      <div class="card-top" onclick="openDetailModal(${w._row})" style="cursor:pointer">
         <div>
           <div class="card-name">${w.Producer} — ${w.Wine}</div>
           <div class="card-sub">${w.Vintage}${w.Bottles > 1 ? ' · ' + w.Bottles + ' bottles' : ''}</div>
         </div>
         ${w.VivinoRating ? `<div class="pill">★ ${parseFloat(w.VivinoRating).toFixed(1)}</div>` : ''}
       </div>
-      <div style="margin-top:6px">
+      <div style="margin-top:6px;cursor:pointer" onclick="openDetailModal(${w._row})">
         <span class="pill">${w.Type || ''}</span>
         ${w.Region ? `<span class="pill">${w.Region.split(',')[0]}</span>` : ''}
         ${w.Magnum === 'Yes' ? '<span class="pill">Magnum</span>' : ''}
@@ -124,6 +124,30 @@ document.getElementById('search').addEventListener('input', render);
 document.getElementById('filterType').addEventListener('change', render);
 
 // --- Add / edit modal ---
+
+function openDetailModal(row) {
+  const w = WINES.find(x => x._row === row);
+  if (!w) return;
+  document.getElementById('modal').innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:1rem">
+      <div>
+        <div style="font-family:Georgia,serif;font-size:20px">${w.Producer} — ${w.Wine}</div>
+        <div style="font-size:13px;color:var(--ink-soft);margin-top:4px">${w.Vintage} · ${w.Type || ''}${w.Magnum === 'Yes' ? ' · Magnum' : ''} · ${w.Region || ''}</div>
+      </div>
+      <button class="btn btn-secondary" style="flex:none;padding:6px 12px" onclick="closeModal()">Close</button>
+    </div>
+    ${w.VivinoRating ? `<label>Vivino / critic score</label><div style="margin-bottom:10px">${parseFloat(w.VivinoRating).toFixed(1)} / 5 ${w.VivinoNote ? '<span style="color:var(--ink-soft)">(' + w.VivinoNote + ')</span>' : ''}</div>` : ''}
+    ${w.ExtraScore ? `<label>Additional scores</label><div style="margin-bottom:10px">${w.ExtraScore}</div>` : ''}
+    <label>Grapes</label><div style="margin-bottom:10px">${w.Grapes || '—'}</div>
+    <label>Tasting notes</label><div style="margin-bottom:10px">${w.TastingNotes || '—'}</div>
+    ${w.Estate ? `<label>Estate</label><div style="margin-bottom:10px">${w.Estate}</div>` : ''}
+    ${w.Awards ? `<label>Awards</label><div style="margin-bottom:10px">${w.Awards}</div>` : ''}
+    <label>In cellar</label>
+    <div style="margin-bottom:10px">${w.Bottles} bottle${w.Bottles > 1 ? 's' : ''}${w.Value ? ` · £${w.Value} each · £${(w.Value * (parseInt(w.Bottles) || 1)).toLocaleString('en-GB')} total` : ''}</div>
+    ${w.MyNotes ? `<label>My notes</label><div style="margin-bottom:10px">${w.MyNotes}</div>` : ''}
+  `;
+  document.getElementById('overlay').classList.add('open');
+}
 
 function openAddModal(prefill) {
   const w = prefill || {};
