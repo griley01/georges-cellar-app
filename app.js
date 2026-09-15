@@ -253,21 +253,12 @@ function showScanningModal(message) {
 let scanCancelled = false;
 function cancelScan() { scanCancelled = true; closeModal(); }
 
-function showScanFailedModal(result) {
-  const debugHtml = result && result._debug ? `
-    <div style="text-align:left; background:#f1ede3; border-radius:6px; padding:0.75rem; margin-bottom:1rem; font-size:11px; font-family:monospace; color:var(--ink-soft); word-break:break-all;">
-      error: ${result.error || '(none)'}<br>
-      httpStatus: ${result._debug.httpStatus ?? '(n/a)'}<br>
-      imageLength: ${result._debug.imageLength ?? '(n/a)'}<br>
-      ${result._rawBody ? 'rawBody: ' + result._rawBody : ''}
-    </div>
-  ` : '';
+function showScanFailedModal() {
   document.getElementById('modal').innerHTML = `
     <div style="text-align:center; padding: 1rem 0.5rem;">
       <div style="font-size:14px; color:var(--ink-soft); margin-bottom:1rem">
         Couldn't read a wine label in that photo, even after a second try.
       </div>
-      ${debugHtml}
       <div class="modal-actions">
         <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
         <button class="btn btn-secondary" onclick="closeModal(); document.getElementById('cameraInput').click();">Try another photo</button>
@@ -317,7 +308,7 @@ document.getElementById('cameraInput').addEventListener('change', async (event) 
   }
 
   if (!result.found) {
-    showScanFailedModal(result);
+    showScanFailedModal();
     return;
   }
   openAddModal(result);
