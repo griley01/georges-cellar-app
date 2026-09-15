@@ -36,9 +36,19 @@ async function loadWines() {
   }
 }
 
+function grapeShort_(g) {
+  return (g || '').split(',')[0].split('(')[0].split('—')[0].trim();
+}
+
 function populateFilters() {
   const types = [...new Set(WINES.map(w => w.Type))].filter(Boolean).sort();
   document.getElementById('filterType').innerHTML = '<option value="">All types</option>' + types.map(t => `<option>${t}</option>`).join('');
+
+  const countries = [...new Set(WINES.map(w => w.Country))].filter(Boolean).sort();
+  document.getElementById('filterCountry').innerHTML = '<option value="">All countries</option>' + countries.map(c => `<option>${c}</option>`).join('');
+
+  const grapes = [...new Set(WINES.map(w => grapeShort_(w.Grapes)))].filter(Boolean).sort();
+  document.getElementById('filterGrape').innerHTML = '<option value="">All grapes</option>' + grapes.map(g => `<option>${g}</option>`).join('');
 }
 
 function kpis() {
@@ -54,9 +64,17 @@ function render() {
   kpis();
   const q = (document.getElementById('search').value || '').toLowerCase();
   const ft = document.getElementById('filterType').value;
+  const fc = document.getElementById('filterCountry').value;
+  const fv = parseFloat(document.getElementById('filterVivino').value) || 0;
+  const fg = document.getElementById('filterGrape').value;
   const filtered = WINES.filter(w => {
     const txt = `${w.Producer} ${w.Wine} ${w.Region} ${w.Grapes}`.toLowerCase();
-    return (!q || txt.includes(q)) && (!ft || w.Type === ft);
+    if (q && !txt.includes(q)) return false;
+    if (ft && w.Type !== ft) return false;
+    if (fc && w.Country !== fc) return false;
+    if (fv && (!w.VivinoRating || parseFloat(w.VivinoRating) < fv)) return false;
+    if (fg && !(w.Grapes || '').includes(fg)) return false;
+    return true;
   });
 
   const grid = document.getElementById('grid');
@@ -122,6 +140,9 @@ async function saveNotes(el) {
 
 document.getElementById('search').addEventListener('input', render);
 document.getElementById('filterType').addEventListener('change', render);
+document.getElementById('filterCountry').addEventListener('change', render);
+document.getElementById('filterVivino').addEventListener('change', render);
+document.getElementById('filterGrape').addEventListener('change', render);
 
 // --- Add / edit modal ---
 
