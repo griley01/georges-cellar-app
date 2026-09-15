@@ -12,22 +12,25 @@
 <style>
   :root {
     --wine-green: #1a3a1a; --wine-green-dark: #0f2410; --wine-gold: #c9a84c;
-    --parchment: #f7f4ee; --ink: #2a241c; --ink-soft: #6b6152;
+    --wine-green-light: #dce6d8; --parchment: #f7f4ee; --ink: #2a241c; --ink-soft: #6b6152;
     --card: #ffffff; --border: #e4ddd0; --red: #8a2020;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Helvetica Neue', Arial, sans-serif; background: var(--parchment); color: var(--ink); min-height: 100vh; padding-bottom: 90px; }
   .header { background: linear-gradient(160deg, var(--wine-green) 0%, var(--wine-green-dark) 100%); padding: calc(1.5rem + env(safe-area-inset-top)) 1.25rem 1.5rem; color: #fff; }
+  .header-inner { display: flex; align-items: center; gap: 14px; }
+  .header-text { flex: 0 0 auto; }
+  .header-art { flex: 1 1 auto; min-width: 140px; }
   .eyebrow { font-size: 11px; letter-spacing: 0.14em; color: var(--wine-gold); text-transform: uppercase; margin-bottom: 0.4rem; }
   h1 { font-family: Georgia, serif; font-size: 26px; font-weight: 400; }
   .kpi-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 1rem; }
-  .kpi { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 0.75rem 0.6rem; text-align: center; }
+  .kpi { background: var(--wine-green-light); border: 1px solid var(--border); border-radius: 10px; padding: 0.75rem 0.6rem; text-align: center; }
   .kpi-label { font-size: 10px; color: var(--ink-soft); text-transform: uppercase; }
   .kpi-value { font-family: Georgia, serif; font-size: 20px; margin-top: 2px; }
   .filter-bar { padding: 0 1rem; display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 0.75rem; }
   .filter-bar input, .filter-bar select { font-size: 13px; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border); background: #fff; flex: 1; min-width: 120px; }
   .grid { padding: 0 1rem; display: grid; gap: 10px; }
-  .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 0.9rem 1rem; }
+  .card { background: var(--wine-green-light); border: 1px solid var(--border); border-radius: 10px; padding: 0.9rem 1rem; }
   .card-top { display: flex; justify-content: space-between; gap: 8px; }
   .card-name { font-family: Georgia, serif; font-size: 15px; }
   .card-sub { font-size: 12px; color: var(--ink-soft); margin-top: 2px; }
@@ -61,8 +64,61 @@
 <body>
 
 <div class="header">
-  <div class="eyebrow">Live cellar · installed app</div>
-  <h1>George's cellar</h1>
+  <div class="header-inner">
+    <div class="header-text">
+      <div class="eyebrow">Wine database &amp; tracker</div>
+      <h1>George's Cellar</h1>
+    </div>
+    <div class="header-art">
+      <svg width="100%" viewBox="0 0 680 110" role="img" aria-hidden="true">
+        <circle cx="50" cy="55" r="35" fill="#1a3a1a"/>
+        <circle cx="50" cy="55" r="22" fill="#0f2410"/>
+        <circle cx="50" cy="55" r="9" fill="#2d4a2d"/>
+        <path d="M 34 40 A 30 30 0 0 1 44 32" fill="none" stroke="#e8dfc8" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+
+        <circle cx="128" cy="55" r="33" fill="#7a8f4a"/>
+        <circle cx="128" cy="55" r="21" fill="#5c6e35"/>
+        <circle cx="128" cy="55" r="8" fill="#94a663"/>
+        <path d="M 113 41 A 28 28 0 0 1 122 34" fill="none" stroke="#f4f0dd" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+
+        <circle cx="205" cy="55" r="36" fill="#0f2410"/>
+        <circle cx="205" cy="55" r="23" fill="#081a09"/>
+        <circle cx="205" cy="55" r="9" fill="#1a3a1a"/>
+        <circle cx="205" cy="55" r="36" fill="none" stroke="#c9a84c" stroke-width="1.5"/>
+        <path d="M 189 40 A 30 30 0 0 1 199 32" fill="none" stroke="#c9a84c" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+
+        <circle cx="283" cy="55" r="32" fill="#6b4423"/>
+        <circle cx="283" cy="55" r="20" fill="#4a2e17"/>
+        <circle cx="283" cy="55" r="8" fill="#8a5a30"/>
+        <path d="M 269 42 A 27 27 0 0 1 277 35" fill="none" stroke="#e8dfc8" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+
+        <circle cx="360" cy="55" r="35" fill="#1a3a1a"/>
+        <circle cx="360" cy="55" r="22" fill="#0f2410"/>
+        <circle cx="360" cy="55" r="9" fill="#2d4a2d"/>
+        <path d="M 344 40 A 30 30 0 0 1 354 32" fill="none" stroke="#e8dfc8" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+
+        <circle cx="437" cy="55" r="33" fill="#7a8f4a"/>
+        <circle cx="437" cy="55" r="21" fill="#5c6e35"/>
+        <circle cx="437" cy="55" r="8" fill="#94a663"/>
+        <path d="M 422 41 A 28 28 0 0 1 431 34" fill="none" stroke="#f4f0dd" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+
+        <circle cx="515" cy="55" r="36" fill="#0f2410"/>
+        <circle cx="515" cy="55" r="23" fill="#081a09"/>
+        <circle cx="515" cy="55" r="9" fill="#1a3a1a"/>
+        <circle cx="515" cy="55" r="36" fill="none" stroke="#c9a84c" stroke-width="1.5"/>
+        <path d="M 499 40 A 30 30 0 0 1 509 32" fill="none" stroke="#c9a84c" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+
+        <circle cx="592" cy="55" r="32" fill="#6b4423"/>
+        <circle cx="592" cy="55" r="20" fill="#4a2e17"/>
+        <circle cx="592" cy="55" r="8" fill="#8a5a30"/>
+        <path d="M 578 42 A 27 27 0 0 1 586 35" fill="none" stroke="#e8dfc8" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+
+        <circle cx="655" cy="55" r="24" fill="#1a3a1a"/>
+        <circle cx="655" cy="55" r="15" fill="#0f2410"/>
+        <circle cx="655" cy="55" r="6" fill="#2d4a2d"/>
+      </svg>
+    </div>
+  </div>
 </div>
 
 <div class="kpi-row">
@@ -74,6 +130,14 @@
 <div class="filter-bar">
   <input type="text" id="search" placeholder="Search producer, region, grape…">
   <select id="filterType"><option value="">All types</option></select>
+  <select id="filterCountry"><option value="">All countries</option></select>
+  <select id="filterVivino">
+    <option value="">Any Vivino rating</option>
+    <option value="4.5">4.5+</option>
+    <option value="4">4.0+</option>
+    <option value="3.5">3.5+</option>
+  </select>
+  <select id="filterGrape"><option value="">All grapes</option></select>
 </div>
 
 <div class="loading-note" id="loadingNote">Loading your cellar…</div>
