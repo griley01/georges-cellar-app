@@ -90,7 +90,7 @@ function render() {
           <div class="card-name">${w.Producer} — ${w.Wine}</div>
           <div class="card-sub">${w.Vintage}${w.Bottles > 1 ? ' · ' + w.Bottles + ' bottles' : ''}</div>
         </div>
-        ${w.VivinoRating ? `<div class="pill">★ ${parseFloat(w.VivinoRating).toFixed(1)}</div>` : ''}
+        ${w.VivinoRating ? `<div class="pill pill-vivino">★ ${parseFloat(w.VivinoRating).toFixed(1)}</div>` : ''}
       </div>
       <div style="margin-top:6px;cursor:pointer" onclick="openDetailModal(${w._row})">
         <span class="pill">${w.Type || ''}</span>
