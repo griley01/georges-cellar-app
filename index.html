@@ -20,7 +20,9 @@
   .header { background: linear-gradient(160deg, var(--wine-green) 0%, var(--wine-green-dark) 100%); padding: calc(1.5rem + env(safe-area-inset-top)) 1.25rem 1.5rem; color: #fff; }
   .header-inner { display: flex; align-items: center; gap: 14px; max-width: 100%; }
   .header-text { flex: 0 0 auto; min-width: 0; }
-  .header-art { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; justify-content: flex-end; overflow: hidden; }
+  .header-art { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; justify-content: flex-end; overflow: hidden; position: relative; }
+  .header-art img { height: 52px; width: auto; max-width: 100%; object-fit: cover; object-position: left center; display: block; filter: saturate(0.85) sepia(0.12) hue-rotate(-6deg) contrast(1.05) brightness(0.85); }
+  .header-art::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to right, var(--wine-green-dark) 0%, transparent 25%, transparent 100%); pointer-events: none; }
   .eyebrow { font-size: 11px; letter-spacing: 0.14em; color: var(--wine-gold); text-transform: uppercase; margin-bottom: 0.4rem; }
   h1 { font-family: Georgia, serif; font-size: 26px; font-weight: 400; }
   .kpi-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 1rem; }
@@ -37,7 +39,7 @@
   .pill { font-size: 11px; padding: 2px 8px; border-radius: 20px; background: var(--wine-green); color: #fff; margin-right: 4px; }
   .stars { font-size: 15px; letter-spacing: 2px; cursor: pointer; margin-top: 6px; }
   .stars span.filled { color: var(--wine-green); } .stars span { color: #fff; }
-  .pill-vivino { background: var(--wine-green); color: #fff; }
+  .pill-vivino { background: var(--wine-green); color: #fff; white-space: nowrap; flex-shrink: 0; }
   .drunk-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: 12px; color: var(--ink); font-weight: 500; }
   .switch { position: relative; width: 34px; height: 19px; }
   .switch input { opacity: 0; width: 0; height: 0; }
@@ -47,8 +49,8 @@
   .switch input:checked + .slider:before { transform: translateX(15px); background: var(--wine-gold); }
   .notes-input { width: 100%; font-size: 12.5px; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--border); margin-top: 6px; font-family: inherit; }
 
-  #addBtn { position: fixed; bottom: calc(22px + env(safe-area-inset-bottom)); right: 22px; width: 56px; height: 56px; border-radius: 50%; background: var(--wine-green); color: var(--wine-gold); font-size: 1.7em; border: none; box-shadow: 0 4px 14px rgba(15,36,16,0.4); z-index: 5; }
-  #cameraBtn { position: fixed; bottom: calc(90px + env(safe-area-inset-bottom)); right: 22px; width: 56px; height: 56px; border-radius: 50%; background: var(--wine-green); color: var(--wine-gold); border: none; box-shadow: 0 4px 14px rgba(15,36,16,0.4); z-index: 5; display: flex; align-items: center; justify-content: center; }
+  #addBtn { position: fixed; bottom: calc(22px + env(safe-area-inset-bottom)); right: 22px; width: 56px; height: 56px; border-radius: 50%; background: var(--wine-green); color: #fff; font-size: 1.7em; border: none; box-shadow: 0 4px 14px rgba(15,36,16,0.4); z-index: 5; }
+  #cameraBtn { position: fixed; bottom: calc(90px + env(safe-area-inset-bottom)); right: 22px; width: 56px; height: 56px; border-radius: 50%; background: var(--wine-green); color: #fff; border: none; box-shadow: 0 4px 14px rgba(15,36,16,0.4); z-index: 5; display: flex; align-items: center; justify-content: center; }
 
   .overlay { display: none; position: fixed; inset: 0; background: rgba(20,20,15,0.5); z-index: 50; align-items: flex-start; justify-content: center; padding: 2rem 1rem; overflow-y: auto; }
   .overlay.open { display: flex; }
@@ -73,53 +75,7 @@
       <h1>George's Cellar</h1>
     </div>
     <div class="header-art">
-      <svg style="height: 52px; width: min(321px, 100%); display: block;" viewBox="0 0 680 110" preserveAspectRatio="xMidYMid meet" role="img" aria-hidden="true">
-        <circle cx="50" cy="55" r="35" fill="#1a3a1a"/>
-        <circle cx="50" cy="55" r="22" fill="#0f2410"/>
-        <circle cx="50" cy="55" r="9" fill="#2d4a2d"/>
-        <path d="M 34 40 A 30 30 0 0 1 44 32" fill="none" stroke="#e8dfc8" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
-
-        <circle cx="128" cy="55" r="33" fill="#7a8f4a"/>
-        <circle cx="128" cy="55" r="21" fill="#5c6e35"/>
-        <circle cx="128" cy="55" r="8" fill="#94a663"/>
-        <path d="M 113 41 A 28 28 0 0 1 122 34" fill="none" stroke="#f4f0dd" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
-
-        <circle cx="205" cy="55" r="36" fill="#0f2410"/>
-        <circle cx="205" cy="55" r="23" fill="#081a09"/>
-        <circle cx="205" cy="55" r="9" fill="#1a3a1a"/>
-        <circle cx="205" cy="55" r="36" fill="none" stroke="#c9a84c" stroke-width="1.5"/>
-        <path d="M 189 40 A 30 30 0 0 1 199 32" fill="none" stroke="#c9a84c" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
-
-        <circle cx="283" cy="55" r="32" fill="#6b4423"/>
-        <circle cx="283" cy="55" r="20" fill="#4a2e17"/>
-        <circle cx="283" cy="55" r="8" fill="#8a5a30"/>
-        <path d="M 269 42 A 27 27 0 0 1 277 35" fill="none" stroke="#e8dfc8" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
-
-        <circle cx="360" cy="55" r="35" fill="#1a3a1a"/>
-        <circle cx="360" cy="55" r="22" fill="#0f2410"/>
-        <circle cx="360" cy="55" r="9" fill="#2d4a2d"/>
-        <path d="M 344 40 A 30 30 0 0 1 354 32" fill="none" stroke="#e8dfc8" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
-
-        <circle cx="437" cy="55" r="33" fill="#7a8f4a"/>
-        <circle cx="437" cy="55" r="21" fill="#5c6e35"/>
-        <circle cx="437" cy="55" r="8" fill="#94a663"/>
-        <path d="M 422 41 A 28 28 0 0 1 431 34" fill="none" stroke="#f4f0dd" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
-
-        <circle cx="515" cy="55" r="36" fill="#0f2410"/>
-        <circle cx="515" cy="55" r="23" fill="#081a09"/>
-        <circle cx="515" cy="55" r="9" fill="#1a3a1a"/>
-        <circle cx="515" cy="55" r="36" fill="none" stroke="#c9a84c" stroke-width="1.5"/>
-        <path d="M 499 40 A 30 30 0 0 1 509 32" fill="none" stroke="#c9a84c" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
-
-        <circle cx="592" cy="55" r="32" fill="#6b4423"/>
-        <circle cx="592" cy="55" r="20" fill="#4a2e17"/>
-        <circle cx="592" cy="55" r="8" fill="#8a5a30"/>
-        <path d="M 578 42 A 27 27 0 0 1 586 35" fill="none" stroke="#e8dfc8" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
-
-        <circle cx="655" cy="55" r="24" fill="#1a3a1a"/>
-        <circle cx="655" cy="55" r="15" fill="#0f2410"/>
-        <circle cx="655" cy="55" r="6" fill="#2d4a2d"/>
-      </svg>
+      <img src="header-bottles.jpg" alt="A row of wine bottles on a shelf">
     </div>
   </div>
 </div>
