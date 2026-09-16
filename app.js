@@ -253,11 +253,17 @@ function showScanningModal(message) {
 let scanCancelled = false;
 function cancelScan() { scanCancelled = true; closeModal(); }
 
-function showScanFailedModal() {
+function showScanFailedModal(result) {
+  const reason = result && result.error
+    ? `Reason: ${result.error}`
+    : "Gemini didn't recognize a wine label in that photo.";
   document.getElementById('modal').innerHTML = `
     <div style="text-align:center; padding: 1rem 0.5rem;">
-      <div style="font-size:14px; color:var(--ink-soft); margin-bottom:1rem">
+      <div style="font-size:14px; color:var(--ink-soft); margin-bottom:0.5rem">
         Couldn't read a wine label in that photo, even after a second try.
+      </div>
+      <div style="font-size:12px; color:var(--ink-soft); margin-bottom:1rem; font-style:italic">
+        ${reason}
       </div>
       <div class="modal-actions">
         <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
@@ -308,7 +314,7 @@ document.getElementById('cameraInput').addEventListener('change', async (event) 
   }
 
   if (!result.found) {
-    showScanFailedModal();
+    showScanFailedModal(result);
     return;
   }
   openAddModal(result);
