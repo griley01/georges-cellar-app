@@ -39,7 +39,7 @@
   .pill { font-size: 11px; padding: 2px 8px; border-radius: 20px; background: var(--wine-green); color: #fff; margin-right: 4px; }
   .stars { font-size: 15px; letter-spacing: 2px; cursor: pointer; margin-top: 6px; }
   .stars span.filled { color: var(--wine-green); } .stars span { color: #fff; }
-  .pill-vivino { background: var(--wine-green); color: #fff; white-space: nowrap; flex-shrink: 0; }
+  .pill-vivino { background: var(--wine-green); color: #fff; white-space: nowrap; flex-shrink: 0; font-size: 15px; font-weight: 600; padding: 6px 14px; display: flex; align-items: center; justify-content: center; text-align: center; }
   .drunk-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: 12px; color: var(--ink); font-weight: 500; }
   .switch { position: relative; width: 34px; height: 19px; }
   .switch input { opacity: 0; width: 0; height: 0; }
@@ -52,7 +52,7 @@
   #addBtn { position: fixed; bottom: calc(22px + env(safe-area-inset-bottom)); right: 22px; width: 56px; height: 56px; border-radius: 50%; background: var(--wine-green); color: #fff; font-size: 1.7em; border: none; box-shadow: 0 4px 14px rgba(15,36,16,0.4); z-index: 5; }
   #cameraBtn { position: fixed; bottom: calc(90px + env(safe-area-inset-bottom)); right: 22px; width: 56px; height: 56px; border-radius: 50%; background: var(--wine-green); color: #fff; border: none; box-shadow: 0 4px 14px rgba(15,36,16,0.4); z-index: 5; display: flex; align-items: center; justify-content: center; }
 
-  .overlay { display: none; position: fixed; inset: 0; background: rgba(20,20,15,0.5); z-index: 50; align-items: flex-start; justify-content: center; padding: 2rem 1rem; overflow-y: auto; }
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(20,20,15,0.5); z-index: 50; align-items: center; justify-content: center; padding: 2rem 1rem; overflow-y: auto; }
   .overlay.open { display: flex; }
   .modal { background: var(--card); border-radius: 12px; max-width: 480px; width: 100%; padding: 1.5rem; }
   .modal input, .modal select, .modal textarea { width: 100%; font-size: 14px; padding: 9px 10px; border-radius: 6px; border: 1px solid var(--border); margin-bottom: 10px; font-family: inherit; }
