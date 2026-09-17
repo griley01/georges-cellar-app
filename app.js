@@ -1,11 +1,15 @@
 const API_URL = 'https://script.google.com/macros/s/AKfycbzknFIpHsJk9MNiJ7D_QLRoEqkZW1hEe-gmrj-9O-km56TLtup_Ze0-IJFImHiJNZYXFw/exec';
 const API_KEY = 'georges-cellar-9k2m-vino-2026'; // must match Code.gs
+const VIEW_KEY = 'georges-cellar-view-7f3q-2026'; // must match Code.gs — read-only, rejected for writes server-side
+
+const VIEW_MODE = new URLSearchParams(location.search).get('view') === '1';
+const ACTIVE_KEY = VIEW_MODE ? VIEW_KEY : API_KEY;
 
 let WINES = [];
 
 async function apiGet(action, params) {
   const url = new URL(API_URL);
-  url.searchParams.set('key', API_KEY);
+  url.searchParams.set('key', ACTIVE_KEY);
   url.searchParams.set('action', action);
   Object.keys(params || {}).forEach(k => url.searchParams.set(k, params[k]));
   const res = await fetch(url);
@@ -18,7 +22,7 @@ async function apiPost(body) {
   const res = await fetch(API_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain' },
-    body: JSON.stringify({ ...body, key: API_KEY })
+    body: JSON.stringify({ ...body, key: ACTIVE_KEY })
   });
   return res.json();
 }
@@ -60,6 +64,13 @@ function kpis() {
   document.getElementById('kpiValue').textContent = totalValue ? '£' + Math.round(totalValue) : '—';
 }
 
+function isDrinkSoon(w) {
+  if (!w.DrinkBy || w.Drunk) return false;
+  const y = parseInt(w.DrinkBy);
+  if (!y) return false;
+  return y <= new Date().getFullYear() + 1;
+}
+
 function render() {
   kpis();
   const q = (document.getElementById('search').value || '').toLowerCase();
@@ -67,6 +78,7 @@ function render() {
   const fc = document.getElementById('filterCountry').value;
   const fv = parseFloat(document.getElementById('filterVivino').value) || 0;
   const fg = document.getElementById('filterGrape').value;
+  const fds = document.getElementById('filterDrinkSoon').value;
   const filtered = WINES.filter(w => {
     const txt = `${w.Producer} ${w.Wine} ${w.Region} ${w.Grapes}`.toLowerCase();
     if (q && !txt.includes(q)) return false;
@@ -74,6 +86,7 @@ function render() {
     if (fc && w.Country !== fc) return false;
     if (fv && (!w.VivinoRating || parseFloat(w.VivinoRating) < fv)) return false;
     if (fg && !(w.Grapes || '').includes(fg)) return false;
+    if (fds === 'soon' && !isDrinkSoon(w)) return false;
     return true;
   });
 
@@ -83,6 +96,17 @@ function render() {
   grid.innerHTML = filtered.map(w => {
     const myRating = parseInt(w.MyRating) || 0;
     const starsHtml = [1,2,3,4,5].map(n => `<span class="${n <= myRating ? 'filled' : ''}" data-row="${w._row}" data-n="${n}" onclick="setRating(this)">★</span>`).join('');
+    const drinkSoonBadge = isDrinkSoon(w) ? `<span class="pill pill-drinksoon">Drink soon${w.DrinkBy ? ' · ' + w.DrinkBy : ''}</span>` : '';
+    const personalControlsHtml = VIEW_MODE ? '' : `
+      <div class="stars">${starsHtml}</div>
+      <div class="drunk-row">
+        <label class="switch">
+          <input type="checkbox" ${w.Drunk ? 'checked' : ''} data-row="${w._row}" onchange="toggleDrunk(this)">
+          <span class="slider"></span>
+        </label>
+        <span>${w.Drunk ? 'Drunk' : 'In cellar'}</span>
+      </div>
+      <textarea class="notes-input" placeholder="Notes…" data-row="${w._row}" onblur="saveNotes(this)">${w.MyNotes || ''}</textarea>`;
     return `
     <div class="card">
       <div class="card-top" onclick="openDetailModal(${w._row})" style="cursor:pointer">
@@ -97,16 +121,9 @@ function render() {
         ${w.Region ? `<span class="pill">${w.Region.split(',')[0]}</span>` : ''}
         ${w.Grapes ? `<span class="pill">${grapeShort_(w.Grapes)}</span>` : ''}
         ${w.Magnum === 'Yes' ? '<span class="pill">Magnum</span>' : ''}
+        ${drinkSoonBadge}
       </div>
-      <div class="stars">${starsHtml}</div>
-      <div class="drunk-row">
-        <label class="switch">
-          <input type="checkbox" ${w.Drunk ? 'checked' : ''} data-row="${w._row}" onchange="toggleDrunk(this)">
-          <span class="slider"></span>
-        </label>
-        <span>${w.Drunk ? 'Drunk' : 'In cellar'}</span>
-      </div>
-      <textarea class="notes-input" placeholder="Notes…" data-row="${w._row}" onblur="saveNotes(this)">${w.MyNotes || ''}</textarea>
+      ${personalControlsHtml}
     </div>`;
   }).join('');
 }
@@ -144,6 +161,29 @@ document.getElementById('filterType').addEventListener('change', render);
 document.getElementById('filterCountry').addEventListener('change', render);
 document.getElementById('filterVivino').addEventListener('change', render);
 document.getElementById('filterGrape').addEventListener('change', render);
+document.getElementById('filterDrinkSoon').addEventListener('change', render);
+
+if (VIEW_MODE) {
+  document.getElementById('addBtn').style.display = 'none';
+  document.getElementById('cameraBtn').style.display = 'none';
+  document.getElementById('shareBtn').style.display = 'none';
+}
+
+async function shareLink() {
+  const url = location.origin + location.pathname + '?view=1';
+  if (navigator.share) {
+    try { await navigator.share({ title: "George's Cellar", url }); return; } catch (e) { /* user cancelled */ }
+  }
+  try {
+    await navigator.clipboard.writeText(url);
+    const btn = document.getElementById('shareBtn');
+    const original = btn.textContent;
+    btn.textContent = 'Link copied!';
+    setTimeout(() => { btn.textContent = original; }, 1500);
+  } catch (e) {
+    prompt('Copy this link:', url);
+  }
+}
 
 // --- Add / edit modal ---
 
@@ -166,9 +206,21 @@ function openDetailModal(row) {
     ${w.Awards ? `<label>Awards</label><div style="margin-bottom:10px">${w.Awards}</div>` : ''}
     <label>In cellar</label>
     <div style="margin-bottom:10px">${w.Bottles} bottle${w.Bottles > 1 ? 's' : ''}${w.Value ? ` · £${w.Value} each · £${(w.Value * (parseInt(w.Bottles) || 1)).toLocaleString('en-GB')} total` : ''}</div>
+    <label>Drink by</label>
+    ${VIEW_MODE
+      ? `<div style="margin-bottom:10px">${w.DrinkBy || '—'}</div>`
+      : `<input type="number" id="drinkByInput" placeholder="e.g. 2027" value="${w.DrinkBy || ''}" style="margin-bottom:10px" onchange="setDrinkBy(${w._row}, this.value)">`
+    }
     ${w.MyNotes ? `<label>My notes</label><div style="margin-bottom:10px">${w.MyNotes}</div>` : ''}
   `;
   document.getElementById('overlay').classList.add('open');
+}
+
+async function setDrinkBy(row, value) {
+  const wine = WINES.find(w => w._row === row);
+  if (wine) wine.DrinkBy = value;
+  await apiPost({ action: 'update', row, patch: { DrinkBy: value } });
+  render();
 }
 
 function openAddModal(prefill) {
@@ -186,6 +238,7 @@ function openAddModal(prefill) {
     <label>Grapes</label><input id="f_Grapes" value="${w.grapes || ''}">
     <label>Bottles</label><input id="f_Bottles" type="number" value="1" min="1">
     <label>Value (£ each)</label><input id="f_Value" type="number" value="">
+    <label>Drink by</label><input id="f_DrinkBy" type="number" placeholder="e.g. 2027" value="${w.drinkBy || ''}">
     <label>Tasting notes</label><textarea id="f_TastingNotes" rows="3">${w.tastingNotes || ''}</textarea>
     <label>Estate</label><textarea id="f_Estate" rows="2">${w.estate || ''}</textarea>
     <div class="modal-actions">
@@ -209,6 +262,7 @@ async function submitAdd() {
     Grapes: document.getElementById('f_Grapes').value,
     Bottles: document.getElementById('f_Bottles').value,
     Value: document.getElementById('f_Value').value,
+    DrinkBy: document.getElementById('f_DrinkBy').value,
     TastingNotes: document.getElementById('f_TastingNotes').value,
     Estate: document.getElementById('f_Estate').value,
     Magnum: 'No', Drunk: false
