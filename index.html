@@ -52,6 +52,7 @@
 
   #addBtn { position: fixed; bottom: calc(22px + env(safe-area-inset-bottom)); right: 22px; width: 56px; height: 56px; border-radius: 50%; background: var(--wine-green); color: #fff; font-size: 1.7em; border: none; box-shadow: 0 4px 14px rgba(15,36,16,0.4); z-index: 5; }
   #cameraBtn { position: fixed; bottom: calc(90px + env(safe-area-inset-bottom)); right: 22px; width: 56px; height: 56px; border-radius: 50%; background: var(--wine-green); color: #fff; border: none; box-shadow: 0 4px 14px rgba(15,36,16,0.4); z-index: 5; display: flex; align-items: center; justify-content: center; }
+  #shareBtn { position: fixed; bottom: calc(158px + env(safe-area-inset-bottom)); right: 22px; width: 56px; height: 56px; border-radius: 50%; background: var(--wine-green); color: #fff; border: none; box-shadow: 0 4px 14px rgba(15,36,16,0.4); z-index: 5; display: flex; align-items: center; justify-content: center; }
 
   .overlay { display: none; position: fixed; inset: 0; background: rgba(20,20,15,0.5); z-index: 50; align-items: center; justify-content: center; padding: 2rem 1rem; overflow-y: auto; }
   .overlay.open { display: flex; }
@@ -102,13 +103,19 @@
     <option value="">All wines</option>
     <option value="soon">Drink soon</option>
   </select>
-  <button id="shareBtn" onclick="shareLink()" style="flex:0 0 auto; padding:8px 14px; border-radius:6px; border:1px solid var(--wine-green); background:var(--wine-green); color:#fff; font-size:13px; cursor:pointer;">Share</button>
 </div>
 
 <div class="loading-note" id="loadingNote">Loading your cellar…</div>
 <div class="grid" id="grid"></div>
 
 <input type="file" accept="image/*" capture="environment" id="cameraInput" style="display:none">
+<button id="shareBtn" onclick="shareLink()">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/>
+    <polyline points="16 6 12 2 8 6"/>
+    <line x1="12" y1="2" x2="12" y2="15"/>
+  </svg>
+</button>
 <button id="cameraBtn" onclick="document.getElementById('cameraInput').click()">
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
