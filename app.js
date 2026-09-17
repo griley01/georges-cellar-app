@@ -95,7 +95,11 @@ function render() {
 
   grid.innerHTML = filtered.map(w => {
     const myRating = parseInt(w.MyRating) || 0;
-    const starsHtml = [1,2,3,4,5].map(n => `<span class="${n <= myRating ? 'filled' : ''}" data-row="${w._row}" data-n="${n}" onclick="setRating(this)">★</span>`).join('');
+    const bottlePath = 'M10 2 L14 2 L14 6 C14 6 17 8 17 12 L17 21 C17 21.5 16.5 22 16 22 L8 22 C7.5 22 7 21.5 7 21 L7 12 C7 8 10 6 10 6 Z';
+    const starsHtml = [1,2,3,4,5].map(n => `
+      <svg width="18" height="22" viewBox="0 0 24 24" data-row="${w._row}" data-n="${n}" onclick="setRating(this)" style="cursor:pointer">
+        <path d="${bottlePath}" fill="${n <= myRating ? 'var(--wine-green)' : '#fff'}" stroke="var(--wine-green)" stroke-width="1.3"/>
+      </svg>`).join('');
     const drinkSoonBadge = isDrinkSoon(w) ? `<span class="pill pill-drinksoon">Drink soon${w.DrinkBy ? ' · ' + w.DrinkBy : ''}</span>` : '';
     const personalControlsHtml = VIEW_MODE ? '' : `
       <div class="stars">${starsHtml}</div>
@@ -177,9 +181,9 @@ async function shareLink() {
   try {
     await navigator.clipboard.writeText(url);
     const btn = document.getElementById('shareBtn');
-    const original = btn.textContent;
-    btn.textContent = 'Link copied!';
-    setTimeout(() => { btn.textContent = original; }, 1500);
+    const original = btn.innerHTML;
+    btn.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+    setTimeout(() => { btn.innerHTML = original; }, 1500);
   } catch (e) {
     prompt('Copy this link:', url);
   }
